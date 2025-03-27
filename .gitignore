@@ -1,1 +1,3 @@
 venv
+outlook_mcp/.env
+outlook_mcp/config.py
