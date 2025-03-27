@@ -106,11 +106,30 @@ class OutlookGraphAPI:
         except requests.exceptions.RequestException as e:
             return f"Error creating task: {str(e)}"
 
+    def get_my_mails(self, top=10):
+        """Retrieve mail messages using Microsoft Graph API."""
+        endpoint = f"{self.base_url}/me/messages?$top={top}"
+        try:
+            response = requests.get(endpoint, headers=self.headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return f"Error retrieving mails: {str(e)}"
+
+    def list_onedrive_items(self):
+        """List OneDrive items using Microsoft Graph API."""
+        endpoint = f"{self.base_url}/me/drive/root/children"
+        try:
+            response = requests.get(endpoint, headers=self.headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return f"Error listing OneDrive items: {str(e)}"
+
 # Create an MCP server instance
 mcp = FastMCP("OutlookServer")
 
-# Hardcoded access token (replace with your actual token)
-
+# Load environment variables for the access token
 dotenv.load_dotenv()
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 outlook_api = OutlookGraphAPI(ACCESS_TOKEN)
@@ -135,6 +154,16 @@ def create_task(task_list_id: str, title: str, due_date: str = None):
     """Create a task in a specific task list using Microsoft Graph API."""
     return outlook_api.create_task(task_list_id, title, due_date)
 
+@mcp.tool()
+def get_my_mails(top: int = 10):
+    """Retrieve mail messages using Microsoft Graph API."""
+    return outlook_api.get_my_mails(top)
+
+@mcp.tool()
+def list_onedrive_items():
+    """List OneDrive items using Microsoft Graph API."""
+    return outlook_api.list_onedrive_items()
+
 if __name__ == "__main__":
     try:
         print("Running MCP Server for Outlook...", file=sys.stderr)
@@ -142,4 +171,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Fatal Error in MCP Server: {str(e)}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
-        sys.exit(1) 
+        sys.exit(1)
