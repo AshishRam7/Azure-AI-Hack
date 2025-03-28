@@ -8,7 +8,9 @@ import os
 
 class OutlookGraphAPI:
     def __init__(self, access_token):
+        # Using v1.0 for most endpoints; the user profile will be fetched via beta.
         self.base_url = "https://graph.microsoft.com/v1.0"
+        self.beta_base_url = "https://graph.microsoft.com/beta"
         self.headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
@@ -126,6 +128,17 @@ class OutlookGraphAPI:
         except requests.exceptions.RequestException as e:
             return f"Error listing OneDrive items: {str(e)}"
 
+    def get_user_profile(self):
+        """Retrieve user profile details using Microsoft Graph API (beta endpoint)."""
+        # Using the beta version to get profile details
+        endpoint = f"{self.beta_base_url}/me/profile"
+        try:
+            response = requests.get(endpoint, headers=self.headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return f"Error retrieving user profile: {str(e)}"
+
 # Create an MCP server instance
 mcp = FastMCP("OutlookServer")
 
@@ -163,6 +176,11 @@ def get_my_mails(top: int = 10):
 def list_onedrive_items():
     """List OneDrive items using Microsoft Graph API."""
     return outlook_api.list_onedrive_items()
+
+@mcp.tool()
+def get_user_profile():
+    """Retrieve user profile details using Microsoft Graph API (beta)."""
+    return outlook_api.get_user_profile()
 
 if __name__ == "__main__":
     try:

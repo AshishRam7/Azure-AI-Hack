@@ -1,4 +1,0 @@
-fastmcp 
-requests
-pydantic
-mcp[cli]

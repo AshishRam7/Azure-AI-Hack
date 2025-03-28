@@ -1,0 +1,8 @@
+fastmcp 
+requests
+pydantic
+mcp[cli]
+google-generativeai
+openai
+python-dotenv
+websockets
