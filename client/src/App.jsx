@@ -13,6 +13,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [theme, setTheme] = useState('dark');
   const messagesEndRef = useRef(null);
+  const [steps,setsteps] = useState([]);
 
   // Themes configuration
   const themes = ['dark', 'light', 'ocean', 'forest'];
@@ -37,22 +38,27 @@ const App = () => {
   const fetchResponse = async (question) => {
     try {
       setIsLoading(true);
-      const response = await fetch('https://api.example.com/chat', {
+      const response = await fetch('https://ms-deploy-mcp.onrender.com/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          message: question 
+          messages: [
+            {
+              "role": "user",
+              "content": question
+            }
+          ]
         })
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
-      return data.response || 'Sorry, I could not process your request.';
+      return {txt:data.reply,steps:data.messages }|| 'Sorry, I could not process your request.';
     } catch (error) {
       console.error('Error:', error);
       return 'Sorry, there was an error processing your request.';
@@ -60,7 +66,7 @@ const App = () => {
       setIsLoading(false);
     }
   };
-
+  
   // Handle message submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,9 +87,11 @@ const App = () => {
     
     const aiMessage = { 
       id: Date.now() + 1, 
-      text: aiResponse, 
+      text: aiResponse.txt, 
+      steps: aiResponse.steps,
       type: 'ai' 
     };
+    console.log("this ois",aiResponse.steps)
     setMessages(prev => [...prev, aiMessage]);
   };
 
@@ -121,7 +129,22 @@ const App = () => {
                 message.type === 'user' ? 'message-user' : 'message-ai'
               }`}
             >
-              {message.text}
+              {message.steps && message.steps.length > 0 && (
+  <div className="steps-container">
+    <h2>Message Steps:</h2>
+    {message.steps.map((step, index) => (
+      <div key={index} className="step-message">
+        <strong>Step {index + 1}:</strong> {step.role}: {step.content}
+      </div>
+    ))}
+  </div>
+)}
+  <div className={`message ${
+                message.type === 'user' ? 'message-user' : 'message-ai'
+              }`}>
+    <h3>{message.text}</h3>
+  </div>
+
             </div>
           </div>
         ))}
