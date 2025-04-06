@@ -9,9 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^4.8.0",
+    "@azure/msal-react": "^3.0.7",
+    "@microsoft/mgt-element": "^4.5.0",
+    "@microsoft/mgt-msal2-provider": "^4.5.0",
+    "@microsoft/mgt-react": "^4.5.0",
+    "axios": "^1.8.4",
     "lucide-react": "^0.484.0",
+    "msal": "^1.4.18",
+    "qs": "^6.14.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-microsoft-login": "^2.0.1"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.32",
